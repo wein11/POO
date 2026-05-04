@@ -1,4 +1,4 @@
-package model;
+package Entity;
 
 public enum EstadoTurno {
     PENDIENTE,

@@ -1,13 +1,13 @@
-import model.Consultorio;
-import model.Domicilio;
-import model.Especialidad;
-import model.HistorialClinico;
-import model.Odontologo;
-import model.Paciente;
-import model.Turno;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import Entity.Consultorio;
+import Entity.Domicilio;
+import Entity.Especialidad;
+import Entity.HistorialClinico;
+import Entity.Odontologo;
+import Entity.Paciente;
+import Entity.Turno;
 
 public class Main {
 
