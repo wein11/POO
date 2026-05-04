@@ -2,26 +2,28 @@ package Entity;
 
 public class Consultorio {
 
-    private int id;
+    private long id;
     private int numero;
     private int piso;
 
-    public Consultorio(int id, int numero, int piso) {
+    public Consultorio() {}
+
+    public Consultorio(long id, int numero, int piso) {
         this.id = id;
         this.numero = numero;
         this.piso = piso;
     }
 
-    public Consultorio(int id, int numero) {
+    public Consultorio(long id, int numero) {
         this.id = id;
         this.numero = numero;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

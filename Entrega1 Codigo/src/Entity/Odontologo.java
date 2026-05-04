@@ -1,21 +1,23 @@
 package Entity;
 
-public class Odontologo {
+public abstract class Odontologo {
 
-    private int id;
+    private long id;
     private String nombre;
     private String apellido;
     private String matricula;
     private Especialidad especialidad;
 
-    public Odontologo(int id, String nombre, String apellido, String matricula) {
+    public Odontologo() {}
+
+    public Odontologo(long id, String nombre, String apellido, String matricula) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.matricula = matricula;
     }
 
-    public Odontologo(int id, String nombre, String apellido, String matricula, Especialidad especialidad) {
+    public Odontologo(long id, String nombre, String apellido, String matricula, Especialidad especialidad) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -23,11 +25,13 @@ public class Odontologo {
         this.especialidad = especialidad;
     }
 
-    public int getId() {
+    public abstract int calcularDuracionConsulta();
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -55,10 +59,6 @@ public class Odontologo {
         this.matricula = matricula;
     }
 
-    public String getNombreCompleto() {
-        return nombre + " " + apellido;
-    }
-
     public Especialidad getEspecialidad() {
         return especialidad;
     }
@@ -67,12 +67,19 @@ public class Odontologo {
         this.especialidad = especialidad;
     }
 
+    public String getNombreCompleto() {
+        return nombre + " " + apellido;
+    }
+
     public String getPresentacion() {
         return "Dr. " + getNombreCompleto() + " - Matrícula: " + matricula;
     }
 
     @Override
     public String toString() {
-        return "Odontólogo #" + id + ": " + getNombreCompleto() + " | Matrícula: " + matricula + " | Especialidad: " + especialidad;
+        return "Odontólogo #" + id + ": " + getNombreCompleto() +
+               " | Matrícula: " + matricula +
+               " | Especialidad: " + especialidad +
+               " | Duración consulta: " + calcularDuracionConsulta() + " min";
     }
 }

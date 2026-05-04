@@ -5,33 +5,38 @@ import java.util.List;
 
 public class HistorialClinico {
 
-    private int id;
+    private long id;
     private Paciente paciente;
     private List<Turno> turnos;
     private String resumenPaciente;
 
-    public HistorialClinico(int id, Paciente paciente,String resumenPaciente) {
+    public HistorialClinico() {}
+
+    public HistorialClinico(long id, Paciente paciente, String resumenPaciente) {
         this.id = id;
         this.paciente = paciente;
+        this.resumenPaciente = resumenPaciente;
         this.turnos = new ArrayList<>();
     }
 
-    public HistorialClinico(int id, Paciente paciente, List<Turno> turnos, String resumenPaciente) {
+    public HistorialClinico(long id, Paciente paciente, List<Turno> turnos, String resumenPaciente) {
         this.id = id;
         this.paciente = paciente;
         this.turnos = turnos;
+        this.resumenPaciente = resumenPaciente;
     }
-    public HistorialClinico(int id, Paciente paciente) {
+
+    public HistorialClinico(long id, Paciente paciente) {
         this.id = id;
         this.paciente = paciente;
         this.turnos = new ArrayList<>();
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -55,7 +60,7 @@ public class HistorialClinico {
         turnos.add(turno);
     }
 
-    public String getResumenPaciente(){
+    public String getResumenPaciente() {
         return resumenPaciente;
     }
 
@@ -63,15 +68,14 @@ public class HistorialClinico {
         this.resumenPaciente = resumenPaciente;
     }
 
-
     @Override
     public String toString() {
         String resultado = "HistorialClinico #" + id +
                            " | Paciente: " + paciente.getNombreCompleto() +
-                           " | Resumen del historial: " + getResumenPaciente() +
+                           " | Resumen del historial: " + resumenPaciente +
                            " | Turnos registrados: " + turnos.size();
         for (Turno turno : turnos) {
-            resultado = resultado + "- " + turno;
+            resultado = resultado + " - " + turno;
         }
         return resultado;
     }

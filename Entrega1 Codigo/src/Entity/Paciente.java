@@ -4,41 +4,45 @@ import java.time.LocalDate;
 
 public class Paciente {
 
-    private int id;
+    private long id;
     private String nombre;
     private String apellido;
     private Integer dni;
-    private LocalDate fechaAlta;
+    private String email;
+    private LocalDate fechaIngreso;
     private Domicilio domicilio;
     private String obraSocial;
     private HistorialClinico historialClinico;
 
-    public Paciente(int id, String nombre, String apellido, Integer dni, LocalDate fechaAlta, Domicilio domicilio, HistorialClinico historialClinico) {
+    public Paciente() {}
+
+    public Paciente(long id, String nombre, String apellido, Integer dni, String email, LocalDate fechaIngreso, Domicilio domicilio) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
-        this.fechaAlta = fechaAlta;
+        this.email = email;
+        this.fechaIngreso = fechaIngreso;
         this.domicilio = domicilio;
-        this.historialClinico = historialClinico;
     }
 
-    public Paciente(int id, String nombre, String apellido, Integer dni, LocalDate fechaAlta, Domicilio domicilio, String obraSocial, HistorialClinico historialClinico) {
+    public Paciente(long id, String nombre, String apellido, Integer dni, String email, LocalDate fechaIngreso, Domicilio domicilio, String obraSocial, HistorialClinico historialClinico) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
-        this.fechaAlta = fechaAlta;
+        this.email = email;
+        this.fechaIngreso = fechaIngreso;
         this.domicilio = domicilio;
         this.obraSocial = obraSocial;
         this.historialClinico = historialClinico;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -66,12 +70,20 @@ public class Paciente {
         this.dni = dni;
     }
 
-    public LocalDate getFechaAlta() {
-        return fechaAlta;
+    public String getEmail() {
+        return email;
     }
 
-    public void setFechaAlta(LocalDate fechaAlta) {
-        this.fechaAlta = fechaAlta;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
     }
 
     public Domicilio getDomicilio() {
@@ -106,7 +118,8 @@ public class Paciente {
     public String toString() {
         return "Paciente #" + id + ": " + getNombreCompleto() +
                " | DNI: " + dni +
-               " | Fecha de alta: " + fechaAlta +
+               " | Email: " + email +
+               " | Fecha de ingreso: " + fechaIngreso +
                " | Domicilio: " + domicilio +
                " | Obra Social: " + obraSocial;
     }

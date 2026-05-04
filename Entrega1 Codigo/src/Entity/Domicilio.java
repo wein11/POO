@@ -2,6 +2,7 @@ package Entity;
 
 public class Domicilio {
 
+    private long id;
     private String calle;
     private int numero;
     private String localidad;
@@ -9,7 +10,20 @@ public class Domicilio {
     private String codigoPostal;
     private Integer piso;
     private String especificaciones;
-    
+
+    public Domicilio() {}
+
+    public Domicilio(long id, String calle, int numero, String localidad, String provincia, String codigoPostal, int piso, String especificaciones) {
+        this.id = id;
+        this.calle = calle;
+        this.numero = numero;
+        this.localidad = localidad;
+        this.provincia = provincia;
+        this.codigoPostal = codigoPostal;
+        this.piso = piso;
+        this.especificaciones = especificaciones;
+    }
+
     public Domicilio(String calle, int numero, String localidad, String provincia, String codigoPostal, int piso, String especificaciones) {
         this.calle = calle;
         this.numero = numero;
@@ -20,7 +34,7 @@ public class Domicilio {
         this.especificaciones = especificaciones;
     }
 
-        public Domicilio(String calle, int numero, String localidad, String provincia, String codigoPostal, int piso) {
+    public Domicilio(String calle, int numero, String localidad, String provincia, String codigoPostal, int piso) {
         this.calle = calle;
         this.numero = numero;
         this.localidad = localidad;
@@ -29,7 +43,7 @@ public class Domicilio {
         this.piso = piso;
     }
 
-        public Domicilio(String calle, int numero, String localidad, String provincia, String codigoPostal, String especificaciones) {
+    public Domicilio(String calle, int numero, String localidad, String provincia, String codigoPostal, String especificaciones) {
         this.calle = calle;
         this.numero = numero;
         this.localidad = localidad;
@@ -37,7 +51,6 @@ public class Domicilio {
         this.codigoPostal = codigoPostal;
         this.especificaciones = especificaciones;
     }
-    
 
     public Domicilio(String calle, int numero, String localidad, String provincia, String codigoPostal) {
         this.calle = calle;
@@ -46,7 +59,14 @@ public class Domicilio {
         this.provincia = provincia;
         this.codigoPostal = codigoPostal;
     }
-    
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getCalle() {
         return calle;

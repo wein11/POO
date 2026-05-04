@@ -5,36 +5,40 @@ import java.time.LocalTime;
 
 public class Turno {
 
-    private int id;
+    private long id;
     private Paciente paciente;
     private Odontologo odontologo;
     private LocalDate fecha;
     private LocalTime hora;
+    private EstadoTurno estado;
     private Consultorio consultorio;
 
-    public Turno(int id, Paciente paciente, Odontologo odontologo, LocalDate fecha, LocalTime hora, Consultorio consultorio) {
+    public Turno() {}
+
+    public Turno(long id, Paciente paciente, Odontologo odontologo, LocalDate fecha, LocalTime hora, EstadoTurno estado) {
         this.id = id;
         this.paciente = paciente;
         this.odontologo = odontologo;
         this.fecha = fecha;
         this.hora = hora;
-        this.consultorio = consultorio;
+        this.estado = estado;
     }
 
-    public Turno(int id, Paciente paciente, Odontologo odontologo, LocalDate fecha, LocalTime hora, String historialMedico, Consultorio consultorio) {
+    public Turno(long id, Paciente paciente, Odontologo odontologo, LocalDate fecha, LocalTime hora, EstadoTurno estado, Consultorio consultorio) {
         this.id = id;
         this.paciente = paciente;
         this.odontologo = odontologo;
         this.fecha = fecha;
         this.hora = hora;
+        this.estado = estado;
         this.consultorio = consultorio;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -70,6 +74,14 @@ public class Turno {
         this.hora = hora;
     }
 
+    public EstadoTurno getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoTurno estado) {
+        this.estado = estado;
+    }
+
     public Consultorio getConsultorio() {
         return consultorio;
     }
@@ -79,27 +91,25 @@ public class Turno {
     }
 
     public String getDetalle() {
-
-        String nombrePaciente = paciente.getNombreCompleto();
-
-        String nombreOdontologo = odontologo.getNombreCompleto();
-      
-        String consultorioTexto = "Consultorio " + consultorio.getNumero() + ", Piso " + consultorio.getPiso();
-
-        return "Turno para: " + nombrePaciente +
-               "\nAtiende: " + nombreOdontologo +
+        String consultorioTexto = consultorio != null
+                ? "Consultorio " + consultorio.getNumero() + ", Piso " + consultorio.getPiso()
+                : "Sin consultorio asignado";
+        return "Turno para: " + paciente.getNombreCompleto() +
+               "\nAtiende: " + odontologo.getNombreCompleto() +
                "\nFecha: " + fecha +
                "\nHora: " + hora +
+               "\nEstado: " + estado +
                "\nLugar: " + consultorioTexto;
     }
 
     @Override
     public String toString() {
-            return "Turno #" + id +
-                     " | Paciente: " + paciente.getNombreCompleto() +
-                     " | Odontólogo: " + odontologo.getNombreCompleto() +
-                     " | Fecha: " + fecha +
-                     " | Hora: " + hora +
-                     " | Consultorio: " + consultorio.getNumero();
+        return "Turno #" + id +
+               " | Paciente: " + paciente.getNombreCompleto() +
+               " | Odontólogo: " + odontologo.getNombreCompleto() +
+               " | Fecha: " + fecha +
+               " | Hora: " + hora +
+               " | Estado: " + estado +
+               (consultorio != null ? " | Consultorio: " + consultorio.getNumero() : "");
     }
 }
