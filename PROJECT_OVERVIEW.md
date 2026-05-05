@@ -147,58 +147,61 @@ src/
   - `guardar` asigna el id antes de agregar: `paciente.setId(contadorId++)`
   - `eliminarPorId` usa `removeIf` con lambda
   - `actualizar` itera por índice y hace `set(i, paciente)` cuando encuentra match
-- Métodos extra: `existeDni(int dni)` — itera la lista, compara `p.getDni() == dni` con null-check
+- Sin métodos de validación — la responsabilidad de validar es exclusiva de la capa Service
 
 ---
 
 **RepositorioOdontologo** — clase concreta
 - Colección interna: `ArrayList<Odontologo>`, contador `long contadorId`
 - Métodos CRUD: idéntica estructura a RepositorioPaciente
-- Métodos extra: `existeMatricula(String matricula)` — busca por `equals` en la matrícula
+- Sin métodos de validación
 
 ---
 
 **RepositorioTurno** — clase concreta
 - Colección interna: `ArrayList<Turno>`, contador `long contadorId`
 - Métodos CRUD: idéntica estructura
-- Métodos extra: `existeTurnoParaOdontologo(long idOdontologo, LocalDate fecha, LocalTime hora)` — itera y busca triple coincidencia de id/fecha/hora; retorna `boolean`
+- Sin métodos de validación
 
 ---
 
 ## SERVICIOS (Service/)
 
 **iService\<T\>** — interfaz genérica
-- Mismos 5 métodos que `iRepository<T>` (mismas firmas)
-- Propósito: contrato que deben cumplir todas las implementaciones de servicio
+- Métodos: `guardar(T t) boolean`, `buscarPorId(long id) T`, `eliminarPorId(long id)`, `actualizar(T t)`, `listarTodos() List<T>`
+- Nota: `guardar` retorna `boolean` (true = éxito, false = validación fallida) en lugar de `void`
 
 ---
 
 **PacienteServiceImpl** — implementa `iService<Paciente>`
 - Delega a: `RepositorioPaciente` (instanciado en constructor)
-- Validaciones en `guardar(Paciente)`:
-  - Nombre no null ni vacío (`trim().isEmpty()`) → lanza `IllegalArgumentException`
-  - DNI no null y mayor a 0 → lanza `IllegalArgumentException`
-  - DNI no duplicado (llama `repositorio.existeDni()`) → lanza `IllegalArgumentException`
-- Los otros 4 métodos (`buscarPorId`, `eliminarPorId`, `actualizar`, `listarTodos`) delegan directo al repositorio sin validaciones adicionales
+- Validaciones en `guardar(Paciente)` — si falla imprime `[ERROR]` y retorna `false`:
+  - Nombre no null ni vacío
+  - DNI no null y mayor a 0
+  - DNI no duplicado (itera `repositorio.listarTodos()` y compara con `equals`)
+- Si todas pasan: llama `repositorio.guardar(paciente)` y retorna `true`
+- Los otros 4 métodos delegan directo al repositorio sin validaciones adicionales
 
 ---
 
 **OdontologoServiceImpl** — implementa `iService<Odontologo>`
 - Delega a: `RepositorioOdontologo`
-- Validaciones en `guardar(Odontologo)`:
-  - Nombre no null ni vacío → lanza `IllegalArgumentException`
-  - Matrícula no null ni vacía → lanza `IllegalArgumentException`
-  - Matrícula no duplicada (llama `repositorio.existeMatricula()`) → lanza `IllegalArgumentException`
+- Validaciones en `guardar(Odontologo)` — si falla imprime `[ERROR]` y retorna `false`:
+  - Nombre no null ni vacío
+  - Matrícula no null ni vacía
+  - Matrícula no duplicada (itera `repositorio.listarTodos()`)
+- Si todas pasan: llama `repositorio.guardar(odontologo)` y retorna `true`
 - Resto delega directo
 
 ---
 
 **TurnoServiceImpl** — implementa `iService<Turno>`
 - Delega a: `RepositorioTurno`; recibe en constructor `PacienteServiceImpl` y `OdontologoServiceImpl`
-- Validaciones en `guardar(Turno)`:
-  - Paciente existe (`servicioPaciente.buscarPorId(turno.getPaciente().getId()) != null`) → lanza `IllegalArgumentException`
-  - Odontólogo existe (`servicioOdontologo.buscarPorId(...) != null`) → lanza `IllegalArgumentException`
-  - Odontólogo no tiene otro turno en esa fecha+hora (`repositorio.existeTurnoParaOdontologo(...)`) → lanza `IllegalArgumentException`
+- Validaciones en `guardar(Turno)` — si falla imprime `[ERROR]` y retorna `false`:
+  - Paciente existe (`servicioPaciente.buscarPorId(turno.getPaciente().getId()) != null`)
+  - Odontólogo existe (`servicioOdontologo.buscarPorId(...) != null`)
+  - Odontólogo no tiene otro turno en esa fecha+hora (itera `repositorio.listarTodos()` y compara id/fecha/hora)
+- Si todas pasan: llama `repositorio.guardar(turno)` y retorna `true`
 - Resto delega directo
 
 ---
@@ -221,10 +224,10 @@ src/
 | Método | Qué hace |
 |---|---|
 | `menuPacientes()` | Loop propio con switch 1-5/0, llama a los métodos de abajo |
-| `registrarPaciente()` | Llama `vista.pedirDatosPaciente()`, construye `Domicilio` y `Paciente`, llama `servicioPaciente.guardar()` |
+| `registrarPaciente()` | Llama `vista.pedirDatosPaciente()`, si devuelve `null` aborta; construye `Domicilio` y `Paciente`, llama `servicioPaciente.guardar()`, si retorna `true` muestra éxito |
 | `buscarPaciente()` | Llama `vista.pedirId()`, llama `servicioPaciente.buscarPorId()`, muestra resultado o error |
 | `eliminarPaciente()` | Pide ID, pide confirmación con `vista.pedirConfirmacion()`, llama `eliminarPorId()` |
-| `actualizarPaciente()` | Pide ID, verifica existencia, llama `pedirDatosPaciente()`, construye nuevo objeto con mismo id, llama `actualizar()` |
+| `actualizarPaciente()` | Pide ID, verifica existencia, llama `pedirDatosPaciente()`, si devuelve `null` aborta; construye nuevo objeto con mismo id, llama `actualizar()` |
 | `listarPacientes()` | Llama `listarTodos()`, itera e imprime con `System.out.println(p)` |
 
 **Métodos privados — Odontólogos:**
@@ -232,10 +235,10 @@ src/
 | Método | Qué hace |
 |---|---|
 | `menuOdontologos()` | Loop propio, misma estructura |
-| `registrarOdontologo()` | Llama `pedirDatosOdontologo()`, instancia `OdontologoOrtodoncista` o `OdontologoEndodoncista` según `tipoEspecialista`, llama `servicioOdontologo.guardar()` |
+| `registrarOdontologo()` | Llama `pedirDatosOdontologo()`, si devuelve `null` aborta; instancia `OdontologoOrtodoncista` o `OdontologoEndodoncista` según `tipoEspecialista`, llama `servicioOdontologo.guardar()`, si retorna `true` muestra éxito |
 | `buscarOdontologo()` | Busca por ID, muestra |
 | `eliminarOdontologo()` | Pide confirmación, elimina |
-| `actualizarOdontologo()` | Reconstruye subclase correcta con mismo id, llama `actualizar()` |
+| `actualizarOdontologo()` | Llama `pedirDatosOdontologo()`, si devuelve `null` aborta; reconstruye subclase correcta con mismo id, llama `actualizar()` |
 | `listarOdontologos()` | Itera e imprime |
 
 **Métodos privados — Turnos:**
@@ -243,10 +246,10 @@ src/
 | Método | Qué hace |
 |---|---|
 | `menuTurnos()` | Loop propio |
-| `registrarTurno()` | Llama `pedirDatosTurno()`, busca Paciente y Odontologo por id, valida que no sean null, construye `Turno` con `EstadoTurno.PENDIENTE`, llama `servicioTurno.guardar()` |
+| `registrarTurno()` | Llama `pedirDatosTurno()`, si devuelve `null` aborta; busca Paciente y Odontologo por id, valida que no sean null, construye `Turno` con `EstadoTurno.PENDIENTE`, llama `servicioTurno.guardar()`, si retorna `true` muestra éxito |
 | `buscarTurno()` | Busca por ID, muestra |
 | `eliminarTurno()` | Pide confirmación, elimina |
-| `actualizarTurno()` | Reconstruye Turno con mismo id y conserva el `estado` del existente, llama `actualizar()` |
+| `actualizarTurno()` | Llama `pedirDatosTurno()`, si devuelve `null` aborta; reconstruye Turno con mismo id y conserva el `estado` del existente, llama `actualizar()` |
 | `listarTurnos()` | Itera e imprime |
 
 **Método privado especial:**
@@ -303,9 +306,9 @@ src/
 | `mostrarError(String)` | Imprime `"[ERROR] " + error` |
 | `pausar()` | Imprime "Presione ENTER para continuar..." y bloquea con `scanner.nextLine()` |
 | `cerrar()` | Llama `scanner.close()` |
-| `pedirDatosPaciente()` | Lee campo por campo con prompts, retorna `DatoPaciente` completo |
-| `pedirDatosOdontologo()` | Lee nombre, apellido, matrícula, tipoEspecialista (1 o 2), retorna `DatoOdontologo` |
-| `pedirDatosTurno()` | Lee idPaciente, idOdontologo, fecha (AAAA-MM-DD), hora (HH:MM), retorna `DatoTurno` |
+| `pedirDatosPaciente()` | Lee campo por campo con prompts; si el parseo de DNI, número de calle o fecha falla imprime `[ERROR]` y retorna `null` |
+| `pedirDatosOdontologo()` | Lee nombre, apellido, matrícula, tipoEspecialista (1 o 2); si el parseo falla imprime `[ERROR]` y retorna `null` |
+| `pedirDatosTurno()` | Lee idPaciente, idOdontologo, fecha (AAAA-MM-DD), hora (HH:MM); si el parseo falla imprime `[ERROR]` y retorna `null` |
 
 ---
 
@@ -337,17 +340,19 @@ CONSTRUCCIÓN
   └─ new Turno(0, paciente, odontologo, fecha, hora, EstadoTurno.PENDIENTE)
 
 PERSISTENCIA
-  └─ TurnoServiceImpl.guardar(turno)
-       ├─ PacienteServiceImpl.buscarPorId(turno.getPaciente().getId())  [validación interna]
-       ├─ OdontologoServiceImpl.buscarPorId(turno.getOdontologo().getId())  [validación interna]
-       ├─ RepositorioTurno.existeTurnoParaOdontologo(idOdontologo, fecha, hora) → boolean
-       │    └─ Si true → lanza IllegalArgumentException("El odontologo ya tiene un turno...")
-       └─ RepositorioTurno.guardar(turno)
+  └─ TurnoServiceImpl.guardar(turno) → boolean
+       ├─ PacienteServiceImpl.buscarPorId(turno.getPaciente().getId())
+       │    └─ Si null → System.out.println("[ERROR]...") → return false
+       ├─ OdontologoServiceImpl.buscarPorId(turno.getOdontologo().getId())
+       │    └─ Si null → System.out.println("[ERROR]...") → return false
+       ├─ Itera listarTodos() buscando triple coincidencia id/fecha/hora
+       │    └─ Si existe → System.out.println("[ERROR]...") → return false
+       └─ RepositorioTurno.guardar(turno) → return true
             └─ turno.setId(contadorId++)  →  ArrayList.add(turno)
 
 RESPUESTA
   └─ ClinicaController.registrarTurno()
-       └─ VistaClinica.mostrarMensaje("Turno registrado con ID: " + turno.getId())
+       └─ Si guardar() retornó true → VistaClinica.mostrarMensaje("Turno registrado con ID: " + turno.getId())
             └─ VistaClinica.pausar()
 ```
 
@@ -375,10 +380,19 @@ La genericidad elimina la duplicación de firmas: una sola interfaz describe el 
 
 **5. Principios SOLID cumplidos**
 
-- **SRP:** cada clase tiene una sola razón de cambio. `VistaClinica` solo maneja consola; `RepositorioPaciente` solo maneja la colección; `PacienteServiceImpl` solo aplica reglas de negocio de paciente.
+- **SRP:** cada clase tiene una sola razón de cambio. `VistaClinica` solo maneja consola; `RepositorioPaciente` solo maneja la colección; `PacienteServiceImpl` solo aplica reglas de negocio de paciente. Las validaciones de unicidad (DNI, matrícula, horario) viven en el Service y no en el Repository.
 - **OCP:** agregar una nueva especialidad de odontólogo (ej. `OdontologoPeriodonista`) requiere crear una subclase nueva sin modificar `Odontologo`, `RepositorioOdontologo`, ni `OdontologoServiceImpl`.
 - **LSP:** `OdontologoOrtodoncista` y `OdontologoEndodoncista` pueden sustituir a `Odontologo` en cualquier contexto (el Controller declara `Odontologo odontologo` y asigna la subclase).
 - **ISP / DIP:** las dependencias entre capas apuntan a interfaces (`iService<T>`, `iRepository<T>`) no a implementaciones concretas en el contrato de diseño.
+
+**6. Manejo de errores sin excepciones**
+
+Las validaciones de negocio no usan `throw`/`try-catch` como mecanismo de control de flujo. En cambio:
+- Los servicios imprimen `[ERROR] mensaje` con `System.out.println` y retornan `false`
+- `VistaClinica` atrapa internamente los errores de parseo (números, fechas) y retorna `null`
+- El Controller chequea `null` y `boolean` con `if` simples
+
+Esto mantiene el código legible antes de introducir el tema de excepciones formalmente.
 
 ---
 
@@ -399,10 +413,16 @@ La genericidad elimina la duplicación de firmas: una sola interfaz describe el 
 
 ---
 
+## ARCHIVOS ADICIONALES
+
+- `diagrama_uml.mmd` — diagrama UML de clases en formato Mermaid. Puede visualizarse en mermaid.live, VS Code (extensión Mermaid Preview) o GitHub (dentro de un bloque de código mermaid en un archivo `.md`). Incluye herencia, implementación, composición y agregación.
+
+---
+
 ## PENDIENTE — Entrega 3 (próximos pasos)
 
 1. **Persistencia real** — reemplazar los `ArrayList` en memoria por archivos (serialización Java, CSV o JSON simple) para que los datos sobrevivan entre ejecuciones del programa
-2. **Excepciones personalizadas** — `PacienteNoEncontradoException`, `OdontologoNoEncontradoException`, `TurnoYaReservadoException`, `DniDuplicadoException`, `MatriculaDuplicadoException`; reemplazarían los `IllegalArgumentException` actuales en los ServiceImpl
+2. **Excepciones personalizadas** — cuando se vea el tema formalmente, reemplazar el manejo actual (boolean + System.out.println) por `PacienteNoEncontradoException`, `TurnoYaReservadoException`, `DniDuplicadoException`, etc., en los ServiceImpl
 3. **Jerarquía de Turno** — posible `TurnoUrgente` y `TurnoControl` como subclases de `Turno` (análoga a la jerarquía de Odontologo ya implementada), con `Turno` volviéndose abstracta
 4. **Tests unitarios** — introducción de JUnit para testear los ServiceImpl y la lógica de validación en aislamiento
 5. **Ampliación de submenús** — gestión de `HistorialClinico` y `Consultorio` desde consola (actualmente existen las entidades pero no tienen CRUD en el menú)
