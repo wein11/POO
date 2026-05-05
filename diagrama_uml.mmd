@@ -86,10 +86,10 @@ class ClinicaController {
     -salir()
 }
 
-ClinicaController --> VistaClinica
-ClinicaController --> PacienteServiceImpl
-ClinicaController --> OdontologoServiceImpl
-ClinicaController --> TurnoServiceImpl
+ClinicaController "1" *-- "1" VistaClinica
+ClinicaController "1" *-- "1" PacienteServiceImpl
+ClinicaController "1" *-- "1" OdontologoServiceImpl
+ClinicaController "1" *-- "1" TurnoServiceImpl
 
 %% ===================== SERVICE =====================
 
@@ -138,9 +138,9 @@ iService <|.. TurnoServiceImpl
 TurnoServiceImpl --> PacienteServiceImpl
 TurnoServiceImpl --> OdontologoServiceImpl
 
-PacienteServiceImpl --> RepositorioPaciente
-OdontologoServiceImpl --> RepositorioOdontologo
-TurnoServiceImpl --> RepositorioTurno
+PacienteServiceImpl "1" *-- "1" RepositorioPaciente
+OdontologoServiceImpl "1" *-- "1" RepositorioOdontologo
+TurnoServiceImpl "1" *-- "1" RepositorioTurno
 
 %% ===================== REPOSITORY =====================
 
@@ -271,13 +271,13 @@ Odontologo <|-- OdontologoOrtodoncista
 Odontologo <|-- OdontologoEndodoncista
 Odontologo --> Especialidad
 
-Paciente --> Domicilio
-Paciente --> HistorialClinico
+Paciente "1" *-- "1" Domicilio
+Paciente "1" *-- "1" HistorialClinico
 
-Turno --> Paciente
-Turno --> Odontologo
-Turno --> Consultorio
+Turno "many" o-- "1" Paciente
+Turno "many" o-- "1" Odontologo
+Turno "many" o-- "1" Consultorio
 Turno --> EstadoTurno
 
-HistorialClinico --> Paciente
-HistorialClinico "1" --> "*" Turno
+HistorialClinico "1" o-- "1" Paciente
+HistorialClinico "1" *-- "*" Turno
