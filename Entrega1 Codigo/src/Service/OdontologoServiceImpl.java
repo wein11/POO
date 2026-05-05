@@ -13,19 +13,23 @@ public class OdontologoServiceImpl implements iService<Odontologo> {
     }
 
     @Override
-    public void guardar(Odontologo odontologo) {
+    public boolean guardar(Odontologo odontologo) {
         if (odontologo.getNombre() == null || odontologo.getNombre().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del odontólogo no puede estar vacío.");
+            System.out.println("[ERROR] El nombre del odontólogo no puede estar vacío.");
+            return false;
         }
         if (odontologo.getMatricula() == null || odontologo.getMatricula().trim().isEmpty()) {
-            throw new IllegalArgumentException("La matrícula no puede estar vacía.");
+            System.out.println("[ERROR] La matrícula no puede estar vacía.");
+            return false;
         }
         for (Odontologo existente : repositorio.listarTodos()) {
             if (existente.getMatricula().equals(odontologo.getMatricula())) {
-                throw new IllegalArgumentException("Ya existe un odontólogo registrado con esa matrícula.");
+                System.out.println("[ERROR] Ya existe un odontólogo registrado con esa matrícula.");
+                return false;
             }
         }
         repositorio.guardar(odontologo);
+        return true;
     }
 
     @Override

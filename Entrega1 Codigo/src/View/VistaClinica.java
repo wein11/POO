@@ -97,53 +97,68 @@ public class VistaClinica {
     }
 
     public DatoPaciente pedirDatosPaciente() {
-        DatoPaciente dato = new DatoPaciente();
-        System.out.print("Nombre: ");
-        dato.setNombre(scanner.nextLine().trim());
-        System.out.print("Apellido: ");
-        dato.setApellido(scanner.nextLine().trim());
-        System.out.print("DNI: ");
-        dato.setDni(Integer.parseInt(scanner.nextLine().trim()));
-        System.out.print("Email: ");
-        dato.setEmail(scanner.nextLine().trim());
-        System.out.print("Fecha de ingreso (AAAA-MM-DD): ");
-        dato.setFechaIngreso(LocalDate.parse(scanner.nextLine().trim()));
-        System.out.println("-- Domicilio --");
-        System.out.print("Calle: ");
-        dato.setCalle(scanner.nextLine().trim());
-        System.out.print("Numero: ");
-        dato.setNumeroCalle(Integer.parseInt(scanner.nextLine().trim()));
-        System.out.print("Localidad: ");
-        dato.setLocalidad(scanner.nextLine().trim());
-        System.out.print("Provincia: ");
-        dato.setProvincia(scanner.nextLine().trim());
-        return dato;
+        try {
+            DatoPaciente dato = new DatoPaciente();
+            System.out.print("Nombre: ");
+            dato.setNombre(scanner.nextLine().trim());
+            System.out.print("Apellido: ");
+            dato.setApellido(scanner.nextLine().trim());
+            System.out.print("DNI: ");
+            dato.setDni(Integer.parseInt(scanner.nextLine().trim()));
+            System.out.print("Email: ");
+            dato.setEmail(scanner.nextLine().trim());
+            System.out.print("Fecha de ingreso (AAAA-MM-DD): ");
+            dato.setFechaIngreso(LocalDate.parse(scanner.nextLine().trim()));
+            System.out.println("-- Domicilio --");
+            System.out.print("Calle: ");
+            dato.setCalle(scanner.nextLine().trim());
+            System.out.print("Numero: ");
+            dato.setNumeroCalle(Integer.parseInt(scanner.nextLine().trim()));
+            System.out.print("Localidad: ");
+            dato.setLocalidad(scanner.nextLine().trim());
+            System.out.print("Provincia: ");
+            dato.setProvincia(scanner.nextLine().trim());
+            return dato;
+        } catch (Exception e) {
+            System.out.println("[ERROR] Formato de dato invalido. Verifique DNI, numero de calle y fecha (AAAA-MM-DD).");
+            return null;
+        }
     }
 
     public DatoOdontologo pedirDatosOdontologo() {
-        DatoOdontologo dato = new DatoOdontologo();
-        System.out.print("Nombre: ");
-        dato.setNombre(scanner.nextLine().trim());
-        System.out.print("Apellido: ");
-        dato.setApellido(scanner.nextLine().trim());
-        System.out.print("Matricula: ");
-        dato.setMatricula(scanner.nextLine().trim());
-        System.out.println("Tipo de especialista: 1=Ortodoncista  2=Endodoncista");
-        System.out.print("Opcion: ");
-        dato.setTipoEspecialista(Integer.parseInt(scanner.nextLine().trim()));
-        return dato;
+        try {
+            DatoOdontologo dato = new DatoOdontologo();
+            System.out.print("Nombre: ");
+            dato.setNombre(scanner.nextLine().trim());
+            System.out.print("Apellido: ");
+            dato.setApellido(scanner.nextLine().trim());
+            System.out.print("Matricula: ");
+            dato.setMatricula(scanner.nextLine().trim());
+            System.out.println("Tipo de especialista: 1=Ortodoncista  2=Endodoncista");
+            System.out.print("Opcion: ");
+            dato.setTipoEspecialista(Integer.parseInt(scanner.nextLine().trim()));
+            return dato;
+        } catch (Exception e) {
+            System.out.println("[ERROR] Opcion de especialista invalida. Ingrese 1 o 2.");
+            return null;
+        }
     }
 
     public DatoTurno pedirDatosTurno() {
-        DatoTurno dato = new DatoTurno();
-        System.out.print("ID del Paciente: ");
-        dato.setIdPaciente(Long.parseLong(scanner.nextLine().trim()));
-        System.out.print("ID del Odontologo: ");
-        dato.setIdOdontologo(Long.parseLong(scanner.nextLine().trim()));
-        System.out.print("Fecha (AAAA-MM-DD): ");
-        dato.setFecha(LocalDate.parse(scanner.nextLine().trim()));
-        System.out.print("Hora (HH:MM): ");
-        dato.setHora(LocalTime.parse(scanner.nextLine().trim()));
-        return dato;
+        try {
+            DatoTurno dato = new DatoTurno();
+            System.out.print("ID del Paciente: ");
+            dato.setIdPaciente(Long.parseLong(scanner.nextLine().trim()));
+            System.out.print("ID del Odontologo: ");
+            dato.setIdOdontologo(Long.parseLong(scanner.nextLine().trim()));
+            System.out.print("Fecha (AAAA-MM-DD): ");
+            dato.setFecha(LocalDate.parse(scanner.nextLine().trim()));
+            System.out.print("Hora (HH:MM): ");
+            dato.setHora(LocalTime.parse(scanner.nextLine().trim()));
+            return dato;
+        } catch (Exception e) {
+            System.out.println("[ERROR] Formato invalido. Verifique IDs, fecha (AAAA-MM-DD) y hora (HH:MM).");
+            return null;
+        }
     }
 }
