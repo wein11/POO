@@ -38,13 +38,23 @@ public class OdontologoServiceImpl implements iService<Odontologo> {
     }
 
     @Override
-    public void eliminarPorId(long id) {
+    public boolean eliminarPorId(long id) {
+        if (repositorio.buscarPorId(id) == null) {
+            System.out.println("[ERROR] No se encontró un odontólogo con ID: " + id);
+            return false;
+        }
         repositorio.eliminarPorId(id);
+        return true;
     }
 
     @Override
-    public void actualizar(Odontologo odontologo) {
+    public boolean actualizar(Odontologo odontologo) {
+        if (repositorio.buscarPorId(odontologo.getId()) == null) {
+            System.out.println("[ERROR] No se encontró un odontólogo con ID: " + odontologo.getId());
+            return false;
+        }
         repositorio.actualizar(odontologo);
+        return true;
     }
 
     @Override

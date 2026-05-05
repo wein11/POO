@@ -95,8 +95,9 @@ public class ClinicaController implements Runnable {
     private void eliminarPaciente() {
         long id = vista.pedirId();
         if (vista.pedirConfirmacion("Confirma la eliminacion del paciente con ID " + id + "?")) {
-            servicioPaciente.eliminarPorId(id);
-            vista.mostrarMensaje("Paciente eliminado correctamente.");
+            if (servicioPaciente.eliminarPorId(id)) {
+                vista.mostrarMensaje("Paciente eliminado correctamente.");
+            }
         } else {
             vista.mostrarMensaje("Operacion cancelada.");
         }
@@ -105,12 +106,6 @@ public class ClinicaController implements Runnable {
 
     private void actualizarPaciente() {
         long id = vista.pedirId();
-        Paciente existente = servicioPaciente.buscarPorId(id);
-        if (existente == null) {
-            vista.mostrarError("No se encontro un paciente con ID: " + id);
-            vista.pausar();
-            return;
-        }
         vista.mostrarMensaje("Ingrese los nuevos datos para el paciente con ID: " + id);
         DatoPaciente dato = vista.pedirDatosPaciente();
         if (dato == null) {
@@ -119,8 +114,9 @@ public class ClinicaController implements Runnable {
         }
         Domicilio domicilio = new Domicilio(dato.getCalle(), dato.getNumeroCalle(), dato.getLocalidad(), dato.getProvincia(), "");
         Paciente actualizado = new Paciente(id, dato.getNombre(), dato.getApellido(), dato.getDni(), dato.getEmail(), dato.getFechaIngreso(), domicilio);
-        servicioPaciente.actualizar(actualizado);
-        vista.mostrarMensaje("Paciente actualizado correctamente.");
+        if (servicioPaciente.actualizar(actualizado)) {
+            vista.mostrarMensaje("Paciente actualizado correctamente.");
+        }
         vista.pausar();
     }
 
@@ -188,8 +184,9 @@ public class ClinicaController implements Runnable {
     private void eliminarOdontologo() {
         long id = vista.pedirId();
         if (vista.pedirConfirmacion("Confirma la eliminacion del odontologo con ID " + id + "?")) {
-            servicioOdontologo.eliminarPorId(id);
-            vista.mostrarMensaje("Odontologo eliminado correctamente.");
+            if (servicioOdontologo.eliminarPorId(id)) {
+                vista.mostrarMensaje("Odontologo eliminado correctamente.");
+            }
         } else {
             vista.mostrarMensaje("Operacion cancelada.");
         }
@@ -198,12 +195,6 @@ public class ClinicaController implements Runnable {
 
     private void actualizarOdontologo() {
         long id = vista.pedirId();
-        Odontologo existente = servicioOdontologo.buscarPorId(id);
-        if (existente == null) {
-            vista.mostrarError("No se encontro un odontologo con ID: " + id);
-            vista.pausar();
-            return;
-        }
         vista.mostrarMensaje("Ingrese los nuevos datos para el odontologo con ID: " + id);
         DatoOdontologo dato = vista.pedirDatosOdontologo();
         if (dato == null) {
@@ -216,8 +207,9 @@ public class ClinicaController implements Runnable {
         } else {
             actualizado = new OdontologoEndodoncista(id, dato.getNombre(), dato.getApellido(), dato.getMatricula());
         }
-        servicioOdontologo.actualizar(actualizado);
-        vista.mostrarMensaje("Odontologo actualizado correctamente.");
+        if (servicioOdontologo.actualizar(actualizado)) {
+            vista.mostrarMensaje("Odontologo actualizado correctamente.");
+        }
         vista.pausar();
     }
 
@@ -261,16 +253,6 @@ public class ClinicaController implements Runnable {
         }
         Paciente paciente = servicioPaciente.buscarPorId(dato.getIdPaciente());
         Odontologo odontologo = servicioOdontologo.buscarPorId(dato.getIdOdontologo());
-        if (paciente == null) {
-            vista.mostrarError("No existe un paciente con ID: " + dato.getIdPaciente());
-            vista.pausar();
-            return;
-        }
-        if (odontologo == null) {
-            vista.mostrarError("No existe un odontologo con ID: " + dato.getIdOdontologo());
-            vista.pausar();
-            return;
-        }
         Turno turno = new Turno(0, paciente, odontologo, dato.getFecha(), dato.getHora(), EstadoTurno.PENDIENTE);
         if (servicioTurno.guardar(turno)) {
             vista.mostrarMensaje("Turno registrado con ID: " + turno.getId());
@@ -292,8 +274,9 @@ public class ClinicaController implements Runnable {
     private void eliminarTurno() {
         long id = vista.pedirId();
         if (vista.pedirConfirmacion("Confirma la eliminacion del turno con ID " + id + "?")) {
-            servicioTurno.eliminarPorId(id);
-            vista.mostrarMensaje("Turno eliminado correctamente.");
+            if (servicioTurno.eliminarPorId(id)) {
+                vista.mostrarMensaje("Turno eliminado correctamente.");
+            }
         } else {
             vista.mostrarMensaje("Operacion cancelada.");
         }
@@ -303,11 +286,7 @@ public class ClinicaController implements Runnable {
     private void actualizarTurno() {
         long id = vista.pedirId();
         Turno existente = servicioTurno.buscarPorId(id);
-        if (existente == null) {
-            vista.mostrarError("No se encontro un turno con ID: " + id);
-            vista.pausar();
-            return;
-        }
+        EstadoTurno estado = (existente != null) ? existente.getEstado() : EstadoTurno.PENDIENTE;
         vista.mostrarMensaje("Ingrese los nuevos datos para el turno con ID: " + id);
         DatoTurno dato = vista.pedirDatosTurno();
         if (dato == null) {
@@ -316,19 +295,10 @@ public class ClinicaController implements Runnable {
         }
         Paciente paciente = servicioPaciente.buscarPorId(dato.getIdPaciente());
         Odontologo odontologo = servicioOdontologo.buscarPorId(dato.getIdOdontologo());
-        if (paciente == null) {
-            vista.mostrarError("No existe un paciente con ID: " + dato.getIdPaciente());
-            vista.pausar();
-            return;
+        Turno actualizado = new Turno(id, paciente, odontologo, dato.getFecha(), dato.getHora(), estado);
+        if (servicioTurno.actualizar(actualizado)) {
+            vista.mostrarMensaje("Turno actualizado correctamente.");
         }
-        if (odontologo == null) {
-            vista.mostrarError("No existe un odontologo con ID: " + dato.getIdOdontologo());
-            vista.pausar();
-            return;
-        }
-        Turno actualizado = new Turno(id, paciente, odontologo, dato.getFecha(), dato.getHora(), existente.getEstado());
-        servicioTurno.actualizar(actualizado);
-        vista.mostrarMensaje("Turno actualizado correctamente.");
         vista.pausar();
     }
 

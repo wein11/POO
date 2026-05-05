@@ -38,13 +38,23 @@ public class PacienteServiceImpl implements iService<Paciente> {
     }
 
     @Override
-    public void eliminarPorId(long id) {
+    public boolean eliminarPorId(long id) {
+        if (repositorio.buscarPorId(id) == null) {
+            System.out.println("[ERROR] No se encontró un paciente con ID: " + id);
+            return false;
+        }
         repositorio.eliminarPorId(id);
+        return true;
     }
 
     @Override
-    public void actualizar(Paciente paciente) {
+    public boolean actualizar(Paciente paciente) {
+        if (repositorio.buscarPorId(paciente.getId()) == null) {
+            System.out.println("[ERROR] No se encontró un paciente con ID: " + paciente.getId());
+            return false;
+        }
         repositorio.actualizar(paciente);
+        return true;
     }
 
     @Override

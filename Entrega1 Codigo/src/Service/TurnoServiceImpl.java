@@ -18,11 +18,11 @@ public class TurnoServiceImpl implements iService<Turno> {
 
     @Override
     public boolean guardar(Turno turno) {
-        if (servicioPaciente.buscarPorId(turno.getPaciente().getId()) == null) {
+        if (turno.getPaciente() == null) {
             System.out.println("[ERROR] El paciente indicado no existe en el sistema.");
             return false;
         }
-        if (servicioOdontologo.buscarPorId(turno.getOdontologo().getId()) == null) {
+        if (turno.getOdontologo() == null) {
             System.out.println("[ERROR] El odontólogo indicado no existe en el sistema.");
             return false;
         }
@@ -44,13 +44,31 @@ public class TurnoServiceImpl implements iService<Turno> {
     }
 
     @Override
-    public void eliminarPorId(long id) {
+    public boolean eliminarPorId(long id) {
+        if (repositorio.buscarPorId(id) == null) {
+            System.out.println("[ERROR] No se encontró un turno con ID: " + id);
+            return false;
+        }
         repositorio.eliminarPorId(id);
+        return true;
     }
 
     @Override
-    public void actualizar(Turno turno) {
+    public boolean actualizar(Turno turno) {
+        if (repositorio.buscarPorId(turno.getId()) == null) {
+            System.out.println("[ERROR] No se encontró un turno con ID: " + turno.getId());
+            return false;
+        }
+        if (turno.getPaciente() == null) {
+            System.out.println("[ERROR] El paciente indicado no existe en el sistema.");
+            return false;
+        }
+        if (turno.getOdontologo() == null) {
+            System.out.println("[ERROR] El odontólogo indicado no existe en el sistema.");
+            return false;
+        }
         repositorio.actualizar(turno);
+        return true;
     }
 
     @Override

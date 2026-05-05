@@ -5,7 +5,7 @@ import java.util.List;
 public interface iService<T> {
     boolean guardar(T t);
     T buscarPorId(long id);
-    void eliminarPorId(long id);
-    void actualizar(T t);
+    boolean eliminarPorId(long id);
+    boolean actualizar(T t);
     List<T> listarTodos();
 }
