@@ -12,16 +12,33 @@ public class OdontologoServiceImpl implements iService<Odontologo> {
         this.repositorio = new RepositorioOdontologo();
     }
 
-    @Override
-    public boolean guardar(Odontologo odontologo) {
+    private boolean validarDatos(Odontologo odontologo) {
         if (odontologo.getNombre() == null || odontologo.getNombre().trim().isEmpty()) {
-            System.out.println("[ERROR] El nombre del odontólogo no puede estar vacío.");
+            System.out.println("[ERROR] El nombre no puede estar vacío.");
+            return false;
+        }
+        if (!odontologo.getNombre().trim().matches("[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+")) {
+            System.out.println("[ERROR] El nombre solo puede contener letras.");
+            return false;
+        }
+        if (odontologo.getApellido() == null || odontologo.getApellido().trim().isEmpty()) {
+            System.out.println("[ERROR] El apellido no puede estar vacío.");
+            return false;
+        }
+        if (!odontologo.getApellido().trim().matches("[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+")) {
+            System.out.println("[ERROR] El apellido solo puede contener letras.");
             return false;
         }
         if (odontologo.getMatricula() == null || odontologo.getMatricula().trim().isEmpty()) {
             System.out.println("[ERROR] La matrícula no puede estar vacía.");
             return false;
         }
+        return true;
+    }
+
+    @Override
+    public boolean guardar(Odontologo odontologo) {
+        if (!validarDatos(odontologo)) return false;
         for (Odontologo existente : repositorio.listarTodos()) {
             if (existente.getMatricula().equals(odontologo.getMatricula())) {
                 System.out.println("[ERROR] Ya existe un odontólogo registrado con esa matrícula.");
@@ -53,6 +70,7 @@ public class OdontologoServiceImpl implements iService<Odontologo> {
             System.out.println("[ERROR] No se encontró un odontólogo con ID: " + odontologo.getId());
             return false;
         }
+        if (!validarDatos(odontologo)) return false;
         repositorio.actualizar(odontologo);
         return true;
     }

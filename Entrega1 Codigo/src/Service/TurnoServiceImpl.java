@@ -16,8 +16,7 @@ public class TurnoServiceImpl implements iService<Turno> {
         this.servicioOdontologo = servicioOdontologo;
     }
 
-    @Override
-    public boolean guardar(Turno turno) {
+    private boolean validarDatos(Turno turno) {
         if (turno.getPaciente() == null) {
             System.out.println("[ERROR] El paciente indicado no existe en el sistema.");
             return false;
@@ -26,6 +25,20 @@ public class TurnoServiceImpl implements iService<Turno> {
             System.out.println("[ERROR] El odontólogo indicado no existe en el sistema.");
             return false;
         }
+        if (turno.getFecha() == null) {
+            System.out.println("[ERROR] La fecha del turno no puede estar vacía.");
+            return false;
+        }
+        if (turno.getHora() == null) {
+            System.out.println("[ERROR] La hora del turno no puede estar vacía.");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean guardar(Turno turno) {
+        if (!validarDatos(turno)) return false;
         for (Turno existente : repositorio.listarTodos()) {
             if (existente.getOdontologo().getId() == turno.getOdontologo().getId() &&
                 existente.getFecha().equals(turno.getFecha()) &&
@@ -59,14 +72,7 @@ public class TurnoServiceImpl implements iService<Turno> {
             System.out.println("[ERROR] No se encontró un turno con ID: " + turno.getId());
             return false;
         }
-        if (turno.getPaciente() == null) {
-            System.out.println("[ERROR] El paciente indicado no existe en el sistema.");
-            return false;
-        }
-        if (turno.getOdontologo() == null) {
-            System.out.println("[ERROR] El odontólogo indicado no existe en el sistema.");
-            return false;
-        }
+        if (!validarDatos(turno)) return false;
         repositorio.actualizar(turno);
         return true;
     }
