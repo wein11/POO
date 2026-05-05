@@ -1,10 +1,7 @@
 package Controller;
 
-import Entity.Domicilio;
-import Entity.EstadoTurno;
+import Entity.HistorialClinico;
 import Entity.Odontologo;
-import Entity.OdontologoEndodoncista;
-import Entity.OdontologoOrtodoncista;
 import Entity.Paciente;
 import Entity.Turno;
 import Service.OdontologoServiceImpl;
@@ -61,6 +58,7 @@ public class ClinicaController implements Runnable {
                 case 3 -> eliminarPaciente();
                 case 4 -> actualizarPaciente();
                 case 5 -> listarPacientes();
+                case 6 -> mostrarHistorialClinico();
                 case 0 -> enSubmenu = false;
                 default -> vista.mostrarError("Opcion invalida.");
             }
@@ -73,10 +71,9 @@ public class ClinicaController implements Runnable {
             vista.pausar();
             return;
         }
-        Domicilio domicilio = new Domicilio(dato.getCalle(), dato.getNumeroCalle(), dato.getLocalidad(), dato.getProvincia(), "");
-        Paciente paciente = new Paciente(0, dato.getNombre(), dato.getApellido(), dato.getDni(), dato.getEmail(), dato.getFechaIngreso(), domicilio);
-        if (servicioPaciente.guardar(paciente)) {
-            vista.mostrarMensaje("Paciente registrado con ID: " + paciente.getId());
+        if (servicioPaciente.registrarPaciente(dato.getNombre(), dato.getApellido(), dato.getDni(), dato.getEmail(), dato.getFechaIngreso(),
+                dato.getCalle(), dato.getNumeroCalle(), dato.getLocalidad(), dato.getProvincia())) {
+            vista.mostrarMensaje("Paciente registrado correctamente.");
         }
         vista.pausar();
     }
@@ -112,9 +109,8 @@ public class ClinicaController implements Runnable {
             vista.pausar();
             return;
         }
-        Domicilio domicilio = new Domicilio(dato.getCalle(), dato.getNumeroCalle(), dato.getLocalidad(), dato.getProvincia(), "");
-        Paciente actualizado = new Paciente(id, dato.getNombre(), dato.getApellido(), dato.getDni(), dato.getEmail(), dato.getFechaIngreso(), domicilio);
-        if (servicioPaciente.actualizar(actualizado)) {
+        if (servicioPaciente.actualizarPaciente(id, dato.getNombre(), dato.getApellido(), dato.getDni(), dato.getEmail(), dato.getFechaIngreso(),
+                dato.getCalle(), dato.getNumeroCalle(), dato.getLocalidad(), dato.getProvincia())) {
             vista.mostrarMensaje("Paciente actualizado correctamente.");
         }
         vista.pausar();
@@ -129,6 +125,16 @@ public class ClinicaController implements Runnable {
             for (Paciente p : pacientes) {
                 System.out.println(p);
             }
+        }
+        vista.pausar();
+    }
+
+    private void mostrarHistorialClinico() {
+        long id = vista.pedirId();
+        HistorialClinico historial = servicioPaciente.obtenerHistorialClinico(id);
+        if (historial != null) {
+            System.out.println("\n--- HISTORIAL CLINICO ---");
+            System.out.println(historial);
         }
         vista.pausar();
     }
@@ -158,14 +164,8 @@ public class ClinicaController implements Runnable {
             vista.pausar();
             return;
         }
-        Odontologo odontologo;
-        if (dato.getTipoEspecialista() == 1) {
-            odontologo = new OdontologoOrtodoncista(0, dato.getNombre(), dato.getApellido(), dato.getMatricula());
-        } else {
-            odontologo = new OdontologoEndodoncista(0, dato.getNombre(), dato.getApellido(), dato.getMatricula());
-        }
-        if (servicioOdontologo.guardar(odontologo)) {
-            vista.mostrarMensaje("Odontologo registrado con ID: " + odontologo.getId());
+        if (servicioOdontologo.registrarOdontologo(dato.getNombre(), dato.getApellido(), dato.getMatricula(), dato.getTipoEspecialista())) {
+            vista.mostrarMensaje("Odontologo registrado correctamente.");
         }
         vista.pausar();
     }
@@ -201,13 +201,7 @@ public class ClinicaController implements Runnable {
             vista.pausar();
             return;
         }
-        Odontologo actualizado;
-        if (dato.getTipoEspecialista() == 1) {
-            actualizado = new OdontologoOrtodoncista(id, dato.getNombre(), dato.getApellido(), dato.getMatricula());
-        } else {
-            actualizado = new OdontologoEndodoncista(id, dato.getNombre(), dato.getApellido(), dato.getMatricula());
-        }
-        if (servicioOdontologo.actualizar(actualizado)) {
+        if (servicioOdontologo.actualizarOdontologo(id, dato.getNombre(), dato.getApellido(), dato.getMatricula(), dato.getTipoEspecialista())) {
             vista.mostrarMensaje("Odontologo actualizado correctamente.");
         }
         vista.pausar();
@@ -239,6 +233,9 @@ public class ClinicaController implements Runnable {
                 case 3 -> eliminarTurno();
                 case 4 -> actualizarTurno();
                 case 5 -> listarTurnos();
+                case 6 -> confirmarTurno();
+                case 7 -> cancelarTurno();
+                case 8 -> completarTurno();
                 case 0 -> enSubmenu = false;
                 default -> vista.mostrarError("Opcion invalida.");
             }
@@ -251,11 +248,8 @@ public class ClinicaController implements Runnable {
             vista.pausar();
             return;
         }
-        Paciente paciente = servicioPaciente.buscarPorId(dato.getIdPaciente());
-        Odontologo odontologo = servicioOdontologo.buscarPorId(dato.getIdOdontologo());
-        Turno turno = new Turno(0, paciente, odontologo, dato.getFecha(), dato.getHora(), EstadoTurno.PENDIENTE);
-        if (servicioTurno.guardar(turno)) {
-            vista.mostrarMensaje("Turno registrado con ID: " + turno.getId());
+        if (servicioTurno.registrarTurno(dato.getIdPaciente(), dato.getIdOdontologo(), dato.getFecha(), dato.getHora())) {
+            vista.mostrarMensaje("Turno registrado correctamente.");
         }
         vista.pausar();
     }
@@ -285,18 +279,13 @@ public class ClinicaController implements Runnable {
 
     private void actualizarTurno() {
         long id = vista.pedirId();
-        Turno existente = servicioTurno.buscarPorId(id);
-        EstadoTurno estado = (existente != null) ? existente.getEstado() : EstadoTurno.PENDIENTE;
         vista.mostrarMensaje("Ingrese los nuevos datos para el turno con ID: " + id);
         DatoTurno dato = vista.pedirDatosTurno();
         if (dato == null) {
             vista.pausar();
             return;
         }
-        Paciente paciente = servicioPaciente.buscarPorId(dato.getIdPaciente());
-        Odontologo odontologo = servicioOdontologo.buscarPorId(dato.getIdOdontologo());
-        Turno actualizado = new Turno(id, paciente, odontologo, dato.getFecha(), dato.getHora(), estado);
-        if (servicioTurno.actualizar(actualizado)) {
+        if (servicioTurno.actualizarTurno(id, dato.getIdPaciente(), dato.getIdOdontologo(), dato.getFecha(), dato.getHora())) {
             vista.mostrarMensaje("Turno actualizado correctamente.");
         }
         vista.pausar();
@@ -311,6 +300,30 @@ public class ClinicaController implements Runnable {
             for (Turno t : turnos) {
                 System.out.println(t);
             }
+        }
+        vista.pausar();
+    }
+
+    private void confirmarTurno() {
+        long id = vista.pedirId();
+        if (servicioTurno.confirmarTurno(id)) {
+            vista.mostrarMensaje("Turno confirmado correctamente.");
+        }
+        vista.pausar();
+    }
+
+    private void cancelarTurno() {
+        long id = vista.pedirId();
+        if (servicioTurno.cancelarTurno(id)) {
+            vista.mostrarMensaje("Turno cancelado correctamente.");
+        }
+        vista.pausar();
+    }
+
+    private void completarTurno() {
+        long id = vista.pedirId();
+        if (servicioTurno.completarTurno(id)) {
+            vista.mostrarMensaje("Turno completado correctamente.");
         }
         vista.pausar();
     }

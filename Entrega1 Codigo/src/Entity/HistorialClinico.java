@@ -10,7 +10,9 @@ public class HistorialClinico {
     private List<Turno> turnos;
     private String resumenPaciente;
 
-    public HistorialClinico() {}
+    public HistorialClinico() {
+        this.turnos = new ArrayList<>();
+    }
 
     public HistorialClinico(long id, Paciente paciente, String resumenPaciente) {
         this.id = id;
@@ -22,7 +24,7 @@ public class HistorialClinico {
     public HistorialClinico(long id, Paciente paciente, List<Turno> turnos, String resumenPaciente) {
         this.id = id;
         this.paciente = paciente;
-        this.turnos = turnos;
+        this.turnos = turnos != null ? turnos : new ArrayList<>();
         this.resumenPaciente = resumenPaciente;
     }
 
@@ -53,11 +55,25 @@ public class HistorialClinico {
     }
 
     public void setTurnos(List<Turno> turnos) {
-        this.turnos = turnos;
+        this.turnos = turnos != null ? turnos : new ArrayList<>();
     }
 
     public void agregarTurno(Turno turno) {
+        if (turnos == null) {
+            turnos = new ArrayList<>();
+        }
         turnos.add(turno);
+    }
+
+    public void eliminarTurnoPorId(long idTurno) {
+        if (turnos != null) {
+            turnos.removeIf(turno -> turno.getId() == idTurno);
+        }
+    }
+
+    public void actualizarTurno(Turno turnoActualizado) {
+        eliminarTurnoPorId(turnoActualizado.getId());
+        agregarTurno(turnoActualizado);
     }
 
     public String getResumenPaciente() {
@@ -70,12 +86,15 @@ public class HistorialClinico {
 
     @Override
     public String toString() {
+        if (turnos == null) {
+            turnos = new ArrayList<>();
+        }
         String resultado = "HistorialClinico #" + id +
-                           " | Paciente: " + paciente.getNombreCompleto() +
-                           " | Resumen del historial: " + resumenPaciente +
-                           " | Turnos registrados: " + turnos.size();
+                           "\nPaciente: " + paciente.getNombreCompleto() +
+                           "\nResumen del historial: " + resumenPaciente +
+                           "\nTurnos registrados: " + turnos.size();
         for (Turno turno : turnos) {
-            resultado = resultado + " - " + turno;
+            resultado = resultado + "\n- " + turno;
         }
         return resultado;
     }

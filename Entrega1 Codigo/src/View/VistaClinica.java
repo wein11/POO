@@ -31,6 +31,7 @@ public class VistaClinica {
         System.out.println("  3. Eliminar paciente");
         System.out.println("  4. Actualizar paciente");
         System.out.println("  5. Listar todos los pacientes");
+        System.out.println("  6. Mostrar historial clinico");
         System.out.println("  0. Volver al menu principal");
         System.out.print("Seleccione una opcion: ");
     }
@@ -53,6 +54,9 @@ public class VistaClinica {
         System.out.println("  3. Eliminar turno");
         System.out.println("  4. Actualizar turno");
         System.out.println("  5. Listar todos los turnos");
+        System.out.println("  6. Confirmar turno");
+        System.out.println("  7. Cancelar turno");
+        System.out.println("  8. Completar turno");
         System.out.println("  0. Volver al menu principal");
         System.out.print("Seleccione una opcion: ");
     }
