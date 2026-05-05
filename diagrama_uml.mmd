@@ -1,0 +1,283 @@
+classDiagram
+
+%% ===================== VIEW =====================
+
+class VistaClinica {
+    -Scanner scanner
+    +mostrarMenuInicial()
+    +mostrarMenuPacientes()
+    +mostrarMenuOdontologos()
+    +mostrarMenuTurnos()
+    +pedirOpcion() int
+    +pedirId() long
+    +pedirConfirmacion(mensaje) boolean
+    +pedirDatosPaciente() DatoPaciente
+    +pedirDatosOdontologo() DatoOdontologo
+    +pedirDatosTurno() DatoTurno
+    +mostrarMensaje(mensaje)
+    +mostrarError(error)
+    +pausar()
+    +cerrar()
+}
+
+class Dato {
+    <<abstract>>
+    #int tipo
+    +getTipo() int
+}
+
+class DatoPaciente {
+    -String nombre
+    -String apellido
+    -int dni
+    -String email
+    -LocalDate fechaIngreso
+    -String calle
+    -int numeroCalle
+    -String localidad
+    -String provincia
+}
+
+class DatoOdontologo {
+    -String nombre
+    -String apellido
+    -String matricula
+    -int tipoEspecialista
+}
+
+class DatoTurno {
+    -long idPaciente
+    -long idOdontologo
+    -LocalDate fecha
+    -LocalTime hora
+}
+
+Dato <|-- DatoPaciente
+Dato <|-- DatoOdontologo
+Dato <|-- DatoTurno
+
+%% ===================== CONTROLLER =====================
+
+class ClinicaController {
+    -VistaClinica vista
+    -PacienteServiceImpl servicioPaciente
+    -OdontologoServiceImpl servicioOdontologo
+    -TurnoServiceImpl servicioTurno
+    -boolean ejecutando
+    +run()
+    -menuPacientes()
+    -menuOdontologos()
+    -menuTurnos()
+    -registrarPaciente()
+    -buscarPaciente()
+    -eliminarPaciente()
+    -actualizarPaciente()
+    -listarPacientes()
+    -registrarOdontologo()
+    -buscarOdontologo()
+    -eliminarOdontologo()
+    -actualizarOdontologo()
+    -listarOdontologos()
+    -registrarTurno()
+    -buscarTurno()
+    -eliminarTurno()
+    -actualizarTurno()
+    -listarTurnos()
+    -salir()
+}
+
+ClinicaController --> VistaClinica
+ClinicaController --> PacienteServiceImpl
+ClinicaController --> OdontologoServiceImpl
+ClinicaController --> TurnoServiceImpl
+
+%% ===================== SERVICE =====================
+
+class iService~T~ {
+    <<interface>>
+    +guardar(t) boolean
+    +buscarPorId(id) T
+    +eliminarPorId(id)
+    +actualizar(t)
+    +listarTodos() List~T~
+}
+
+class PacienteServiceImpl {
+    -RepositorioPaciente repositorio
+    +guardar(paciente) boolean
+    +buscarPorId(id) Paciente
+    +eliminarPorId(id)
+    +actualizar(paciente)
+    +listarTodos() List~Paciente~
+}
+
+class OdontologoServiceImpl {
+    -RepositorioOdontologo repositorio
+    +guardar(odontologo) boolean
+    +buscarPorId(id) Odontologo
+    +eliminarPorId(id)
+    +actualizar(odontologo)
+    +listarTodos() List~Odontologo~
+}
+
+class TurnoServiceImpl {
+    -RepositorioTurno repositorio
+    -PacienteServiceImpl servicioPaciente
+    -OdontologoServiceImpl servicioOdontologo
+    +guardar(turno) boolean
+    +buscarPorId(id) Turno
+    +eliminarPorId(id)
+    +actualizar(turno)
+    +listarTodos() List~Turno~
+}
+
+iService <|.. PacienteServiceImpl
+iService <|.. OdontologoServiceImpl
+iService <|.. TurnoServiceImpl
+
+TurnoServiceImpl --> PacienteServiceImpl
+TurnoServiceImpl --> OdontologoServiceImpl
+
+PacienteServiceImpl --> RepositorioPaciente
+OdontologoServiceImpl --> RepositorioOdontologo
+TurnoServiceImpl --> RepositorioTurno
+
+%% ===================== REPOSITORY =====================
+
+class iRepository~T~ {
+    <<interface>>
+    +guardar(t)
+    +buscarPorId(id) T
+    +eliminarPorId(id)
+    +actualizar(t)
+    +listarTodos() List~T~
+}
+
+class RepositorioPaciente {
+    -List~Paciente~ pacientes
+    -long contadorId
+    +guardar(paciente)
+    +buscarPorId(id) Paciente
+    +eliminarPorId(id)
+    +actualizar(paciente)
+    +listarTodos() List~Paciente~
+}
+
+class RepositorioOdontologo {
+    -List~Odontologo~ odontologos
+    -long contadorId
+    +guardar(odontologo)
+    +buscarPorId(id) Odontologo
+    +eliminarPorId(id)
+    +actualizar(odontologo)
+    +listarTodos() List~Odontologo~
+}
+
+class RepositorioTurno {
+    -List~Turno~ turnos
+    -long contadorId
+    +guardar(turno)
+    +buscarPorId(id) Turno
+    +eliminarPorId(id)
+    +actualizar(turno)
+    +listarTodos() List~Turno~
+}
+
+iRepository <|.. RepositorioPaciente
+iRepository <|.. RepositorioOdontologo
+iRepository <|.. RepositorioTurno
+
+%% ===================== ENTITY =====================
+
+class Odontologo {
+    <<abstract>>
+    -long id
+    -String nombre
+    -String apellido
+    -String matricula
+    -Especialidad especialidad
+    +calcularDuracionConsulta() int
+    +getNombreCompleto() String
+    +getPresentacion() String
+}
+
+class OdontologoOrtodoncista {
+    +calcularDuracionConsulta() int
+}
+
+class OdontologoEndodoncista {
+    +calcularDuracionConsulta() int
+}
+
+class Especialidad {
+    <<enum>>
+    ORTODONCIA
+    ENDODONCIA
+    PERIODONCIA
+    PROTESIS
+    CIRUGIA
+}
+
+class Paciente {
+    -long id
+    -String nombre
+    -String apellido
+    -Integer dni
+    -String email
+    -LocalDate fechaIngreso
+    -String obraSocial
+    +getNombreCompleto() String
+}
+
+class Turno {
+    -long id
+    -LocalDate fecha
+    -LocalTime hora
+    +getDetalle() String
+}
+
+class EstadoTurno {
+    <<enum>>
+    PENDIENTE
+    CONFIRMADO
+    CANCELADO
+    COMPLETADO
+}
+
+class Domicilio {
+    -long id
+    -String calle
+    -int numero
+    -String localidad
+    -String provincia
+    -String codigoPostal
+    -Integer piso
+    -String especificaciones
+}
+
+class HistorialClinico {
+    -long id
+    -String resumenPaciente
+    +agregarTurno(turno)
+}
+
+class Consultorio {
+    -long id
+    -int numero
+    -int piso
+}
+
+Odontologo <|-- OdontologoOrtodoncista
+Odontologo <|-- OdontologoEndodoncista
+Odontologo --> Especialidad
+
+Paciente --> Domicilio
+Paciente --> HistorialClinico
+
+Turno --> Paciente
+Turno --> Odontologo
+Turno --> Consultorio
+Turno --> EstadoTurno
+
+HistorialClinico --> Paciente
+HistorialClinico "1" --> "*" Turno
