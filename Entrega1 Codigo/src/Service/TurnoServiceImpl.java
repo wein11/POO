@@ -24,9 +24,12 @@ public class TurnoServiceImpl implements iService<Turno> {
         if (servicioOdontologo.buscarPorId(turno.getOdontologo().getId()) == null) {
             throw new IllegalArgumentException("El odontólogo indicado no existe en el sistema.");
         }
-        if (repositorio.existeTurnoParaOdontologo(
-                turno.getOdontologo().getId(), turno.getFecha(), turno.getHora())) {
-            throw new IllegalArgumentException("El odontólogo ya tiene un turno asignado en esa fecha y hora.");
+        for (Turno existente : repositorio.listarTodos()) {
+            if (existente.getOdontologo().getId() == turno.getOdontologo().getId() &&
+                existente.getFecha().equals(turno.getFecha()) &&
+                existente.getHora().equals(turno.getHora())) {
+                throw new IllegalArgumentException("El odontólogo ya tiene un turno asignado en esa fecha y hora.");
+            }
         }
         repositorio.guardar(turno);
     }

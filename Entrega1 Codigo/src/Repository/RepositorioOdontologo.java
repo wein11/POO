@@ -43,10 +43,4 @@ public class RepositorioOdontologo {
         return new ArrayList<>(odontologos);
     }
 
-    public boolean existeMatricula(String matricula) {
-        for (Odontologo o : odontologos) {
-            if (o.getMatricula().equals(matricula)) return true;
-        }
-        return false;
-    }
 }

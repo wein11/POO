@@ -43,10 +43,4 @@ public class RepositorioPaciente {
         return new ArrayList<>(pacientes);
     }
 
-    public boolean existeDni(int dni) {
-        for (Paciente p : pacientes) {
-            if (p.getDni() != null && p.getDni() == dni) return true;
-        }
-        return false;
-    }
 }

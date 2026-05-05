@@ -20,8 +20,10 @@ public class PacienteServiceImpl implements iService<Paciente> {
         if (paciente.getDni() == null || paciente.getDni() <= 0) {
             throw new IllegalArgumentException("El DNI ingresado no es válido.");
         }
-        if (repositorio.existeDni(paciente.getDni())) {
-            throw new IllegalArgumentException("Ya existe un paciente registrado con ese DNI.");
+        for (Paciente existente : repositorio.listarTodos()) {
+            if (existente.getDni() != null && existente.getDni().equals(paciente.getDni())) {
+                throw new IllegalArgumentException("Ya existe un paciente registrado con ese DNI.");
+            }
         }
         repositorio.guardar(paciente);
     }

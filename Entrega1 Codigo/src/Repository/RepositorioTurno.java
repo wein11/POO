@@ -1,8 +1,6 @@
 package Repository;
 
 import Entity.Turno;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,14 +43,4 @@ public class RepositorioTurno {
         return new ArrayList<>(turnos);
     }
 
-    public boolean existeTurnoParaOdontologo(long idOdontologo, LocalDate fecha, LocalTime hora) {
-        for (Turno t : turnos) {
-            if (t.getOdontologo().getId() == idOdontologo &&
-                t.getFecha().equals(fecha) &&
-                t.getHora().equals(hora)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

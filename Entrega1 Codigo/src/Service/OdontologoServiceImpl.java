@@ -20,8 +20,10 @@ public class OdontologoServiceImpl implements iService<Odontologo> {
         if (odontologo.getMatricula() == null || odontologo.getMatricula().trim().isEmpty()) {
             throw new IllegalArgumentException("La matrícula no puede estar vacía.");
         }
-        if (repositorio.existeMatricula(odontologo.getMatricula())) {
-            throw new IllegalArgumentException("Ya existe un odontólogo registrado con esa matrícula.");
+        for (Odontologo existente : repositorio.listarTodos()) {
+            if (existente.getMatricula().equals(odontologo.getMatricula())) {
+                throw new IllegalArgumentException("Ya existe un odontólogo registrado con esa matrícula.");
+            }
         }
         repositorio.guardar(odontologo);
     }
